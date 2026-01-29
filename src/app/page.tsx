@@ -302,7 +302,7 @@ export default function HomePage() {
             The only sovereign intelligence infrastructure for Morocco's 2030 transformation.
           </p>
           <Link 
-            href="/api"
+            href={"/api" as any}
             className="inline-block mt-12 font-mono text-[11px] uppercase tracking-widest border border-white/30 px-8 py-4 hover:bg-white hover:text-black transition-all duration-300"
           >
             API Access →
