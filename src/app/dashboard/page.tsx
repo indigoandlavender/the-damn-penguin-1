@@ -206,15 +206,19 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // Generous horizontal padding
+  const px = "px-10 md:px-16 lg:px-24 xl:px-32";
+  const mx = "mx-10 md:mx-16 lg:mx-24 xl:mx-32";
+
   return (
     <div className="min-h-screen bg-white text-black">
       
       {/* Navigation */}
-      <nav className="px-8 py-6 flex items-center justify-between">
+      <nav className={`${px} py-10 flex items-center justify-between`}>
         <Link href="/" className="text-[15px] font-semibold tracking-[-0.02em]">
           The Morocco Oracle
         </Link>
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-12">
           <Link href="/infrastructure" className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
             Infrastructure
           </Link>
@@ -231,14 +235,14 @@ export default function DashboardPage() {
       </nav>
 
       {/* Thin rule */}
-      <div className="mx-8 h-px bg-gray-200" />
+      <div className={`${mx} h-px bg-gray-200`} />
 
-      {/* Header */}
-      <header className="px-8 py-12">
-        <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+      {/* Header — Generous vertical space */}
+      <header className={`${px} pt-20 pb-24`}>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
           Investment Portfolio
         </p>
-        <h1 className="text-[clamp(3rem,8vw,7rem)] font-bold leading-[0.85] tracking-[-0.03em] mt-4">
+        <h1 className="text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.85] tracking-[-0.04em] mt-8">
           PROPERTY
           <br />
           INTELLIGENCE
@@ -246,44 +250,44 @@ export default function DashboardPage() {
       </header>
 
       {/* Thin rule */}
-      <div className="mx-8 h-px bg-gray-200" />
+      <div className={`${mx} h-px bg-gray-200`} />
 
-      {/* Stats — Large, editorial */}
-      <section className="px-8 py-16 grid grid-cols-2 gap-16">
+      {/* Stats — Large, editorial, lots of breathing room */}
+      <section className={`${px} py-24 grid grid-cols-2 gap-24`}>
         <div>
-          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
             Portfolio Value
           </p>
-          <p className="text-[3.5rem] font-bold tracking-[-0.03em] mt-2 leading-none">
+          <p className="text-[clamp(2rem,5vw,4rem)] font-bold tracking-[-0.03em] mt-4 leading-none">
             {formatMAD(portfolioValue)}
-            <span className="text-[1rem] text-gray-400 ml-2">MAD</span>
+            <span className="text-[1rem] font-normal text-gray-300 ml-3">MAD</span>
           </p>
         </div>
         <div>
-          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
             Net Acquisition
           </p>
-          <p className="text-[3.5rem] font-bold tracking-[-0.03em] mt-2 leading-none">
+          <p className="text-[clamp(2rem,5vw,4rem)] font-bold tracking-[-0.03em] mt-4 leading-none">
             {formatMAD(totalNetCost)}
-            <span className="text-[1rem] text-gray-400 ml-2">MAD</span>
+            <span className="text-[1rem] font-normal text-gray-300 ml-3">MAD</span>
           </p>
         </div>
       </section>
 
       {/* Thin rule */}
-      <div className="mx-8 h-px bg-gray-200" />
+      <div className={`${mx} h-px bg-gray-200`} />
 
       {/* Properties count */}
-      <div className="px-8 py-6">
-        <p className="text-[11px] uppercase tracking-[0.15em]">
+      <div className={`${px} py-10`}>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
           {mockProperties.length} Properties
         </p>
       </div>
 
       {/* Thin rule */}
-      <div className="mx-8 h-px bg-gray-200" />
+      <div className={`${mx} h-px bg-gray-200`} />
 
-      {/* Property List — Editorial style */}
+      {/* Property List — Editorial style with generous spacing */}
       <section>
         {mockProperties.map((property, index) => (
           <Link 
@@ -292,45 +296,45 @@ export default function DashboardPage() {
             className="block group"
             onMouseEnter={() => handlePropertyHover(property)}
           >
-            <article className="px-8 py-12 hover:bg-gray-50 transition-colors">
+            <article className={`${px} py-16 hover:bg-gray-50 transition-colors duration-300`}>
               <div className="grid grid-cols-12 gap-8 items-start">
                 
                 {/* Index */}
                 <div className="col-span-1">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-300">
                     {String(index + 1).padStart(2, '0')}
                   </p>
                 </div>
 
                 {/* Main info */}
-                <div className="col-span-5">
-                  <h2 className="text-[2rem] font-bold tracking-[-0.02em] leading-tight group-hover:text-gray-500 transition-colors">
+                <div className="col-span-4">
+                  <h2 className="text-[2.5rem] font-bold tracking-[-0.03em] leading-none group-hover:text-gray-500 transition-colors">
                     {property.city}
                   </h2>
-                  <p className="text-[13px] text-gray-500 mt-2">
+                  <p className="text-[13px] text-gray-400 mt-4">
                     {property.neighborhood} · {property.property_type}
                   </p>
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 mt-4">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-300 mt-3">
                     {property.title_number || property.requisition_number || property.melkia_reference}
                   </p>
                 </div>
 
                 {/* Status */}
                 <div className="col-span-2">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 mb-3">
                     Status
                   </p>
-                  <p className="text-[13px] mt-2">
+                  <p className="text-[14px]">
                     {property.legal_status}
                   </p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <div className="w-16 h-1 bg-gray-200">
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="w-20 h-[3px] bg-gray-100">
                       <div 
                         className="h-full bg-black"
                         style={{ width: `${property.legal_confidence_score}%` }}
                       />
                     </div>
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[11px] text-gray-300">
                       {property.legal_confidence_score}%
                     </span>
                   </div>
@@ -338,24 +342,24 @@ export default function DashboardPage() {
 
                 {/* Value */}
                 <div className="col-span-2">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 mb-3">
                     Value
                   </p>
-                  <p className="text-[1.25rem] font-bold tracking-[-0.02em] mt-2">
+                  <p className="text-[1.5rem] font-bold tracking-[-0.02em]">
                     {formatMAD(property.estimated_value_mad || 0)}
                   </p>
-                  <p className="text-[11px] text-gray-400">MAD</p>
+                  <p className="text-[11px] text-gray-300 mt-1">MAD</p>
                 </div>
 
                 {/* Net */}
-                <div className="col-span-2 text-right">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                <div className="col-span-3 text-right">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 mb-3">
                     Net Acquisition
                   </p>
-                  <p className="text-[1.25rem] font-bold tracking-[-0.02em] mt-2">
+                  <p className="text-[1.5rem] font-bold tracking-[-0.02em]">
                     {formatMAD(property.net_acquisition_cost_mad || 0)}
                   </p>
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-[11px] text-gray-400 mt-1">
                     -{property.estimated_cashback_pct}% charter
                   </p>
                 </div>
@@ -363,19 +367,22 @@ export default function DashboardPage() {
             </article>
 
             {/* Thin rule */}
-            <div className="mx-8 h-px bg-gray-200" />
+            <div className={`${mx} h-px bg-gray-100`} />
           </Link>
         ))}
       </section>
 
+      {/* Spacer */}
+      <div className="h-32" />
+
       {/* Map section */}
-      <section className="mt-16">
-        <div className="px-8 py-6">
-          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+      <section>
+        <div className={`${px} py-10`}>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
             Geographic Distribution
           </p>
         </div>
-        <div className="h-[70vh] bg-gray-100">
+        <div className="h-[75vh] bg-gray-100">
           <CinematicMap
             ref={mapRef}
             height="100%"
@@ -389,9 +396,12 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      {/* Spacer */}
+      <div className="h-32" />
+
       {/* Footer */}
-      <footer className="px-8 py-8 flex items-center justify-between border-t border-gray-200 mt-16">
-        <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+      <footer className={`${px} py-12 flex items-center justify-between border-t border-gray-100`}>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-gray-300">
           © 2026 The Morocco Oracle
         </p>
         <button
@@ -399,11 +409,14 @@ export default function DashboardPage() {
             await fetch('/api/auth', { method: 'DELETE' });
             window.location.href = '/login';
           }}
-          className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors"
+          className="text-[11px] uppercase tracking-[0.2em] text-gray-300 hover:text-black transition-colors"
         >
           Sign Out
         </button>
       </footer>
+
+      {/* Bottom breathing room */}
+      <div className="h-16" />
     </div>
   );
 }
