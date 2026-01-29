@@ -1,0 +1,746 @@
+/**
+ * THE MOROCCO ORACLE — Design System
+ * 
+ * Aesthetic: Stark. Black. White. One accent.
+ * NOT: Beige, cream, warm, hospitality, lifestyle
+ * 
+ * Think: Bloomberg terminal meets art gallery
+ * Data is dry. Presentation makes you want to touch it.
+ */
+
+@import 'tailwindcss';
+
+/* =============================================================================
+   CSS VARIABLES — The Palette
+   ============================================================================= */
+
+:root {
+  /* Core — Black and White ONLY */
+  --black: #000000;
+  --white: #ffffff;
+  --gray-900: #111111;
+  --gray-800: #1a1a1a;
+  --gray-700: #2a2a2a;
+  --gray-600: #3a3a3a;
+  --gray-500: #666666;
+  --gray-400: #888888;
+  --gray-300: #aaaaaa;
+  --gray-200: #cccccc;
+  --gray-100: #e5e5e5;
+  --gray-50: #f5f5f5;
+  
+  /* THE ACCENT — Signal Red/Orange (used sparingly) */
+  --accent: #ff4d00;
+  --accent-light: #ff6a2a;
+  --accent-dark: #cc3d00;
+  
+  /* Semantic Colors */
+  --hot: var(--accent);
+  --verified: var(--black);
+  --pending: var(--gray-500);
+  --alert: var(--accent);
+  
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =============================================================================
+   BASE
+   ============================================================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--black);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+/* Dark mode variant */
+body.dark {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--white);
+}
+
+/* =============================================================================
+   TYPOGRAPHY
+   ============================================================================= */
+
+/* Display — Large serif headlines */
+.display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.display-md {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* Micro Labels — Uppercase, tracked, small */
+.micro {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gray-500);
+}
+
+.micro-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gray-400);
+}
+
+/* Mono data */
+.mono {
+  font-family: var(--font-mono);
+}
+
+.mono-data {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+}
+
+.mono-sm {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+}
+
+/* Large numbers */
+.number-xl {
+  font-family: var(--font-mono);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.number-lg {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* =============================================================================
+   LAYOUT
+   ============================================================================= */
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* Asymmetric grids */
+.grid-7-5 {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: var(--space-8);
+}
+
+.grid-5-7 {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: var(--space-8);
+}
+
+.grid-8-4 {
+  display: grid;
+  grid-template-columns: 8fr 4fr;
+  gap: var(--space-8);
+}
+
+/* Generous spacing between sections */
+.section {
+  padding: var(--space-24) 0;
+}
+
+.section-lg {
+  padding: var(--space-32) 0;
+}
+
+/* =============================================================================
+   INTERACTIVE — Black/White Inversion
+   ============================================================================= */
+
+/* Card that inverts on hover */
+.card-invert {
+  background-color: var(--white);
+  color: var(--black);
+  border: 1px solid var(--gray-200);
+  transition: 
+    background-color var(--duration-normal) var(--ease-out),
+    color var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+}
+
+.card-invert:hover {
+  background-color: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* Dark card that inverts to white */
+.card-invert-dark {
+  background-color: var(--black);
+  color: var(--white);
+  border: 1px solid var(--gray-800);
+  transition: 
+    background-color var(--duration-normal) var(--ease-out),
+    color var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+}
+
+.card-invert-dark:hover {
+  background-color: var(--white);
+  color: var(--black);
+  border-color: var(--gray-200);
+}
+
+/* Subtle hover lift */
+.card-lift {
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.card-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Link underline reveal */
+.link-reveal {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-reveal::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.link-reveal:hover::after {
+  width: 100%;
+}
+
+/* =============================================================================
+   BUTTONS
+   ============================================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.btn-primary {
+  background-color: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+.btn-primary:hover {
+  background-color: var(--white);
+  color: var(--black);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--black);
+  border-color: var(--black);
+}
+
+.btn-secondary:hover {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--white);
+  border-color: var(--accent);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+/* Pill filters */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent;
+  color: var(--gray-500);
+  border: 1px solid var(--gray-200);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.pill:hover {
+  color: var(--black);
+  border-color: var(--gray-400);
+}
+
+.pill.active,
+.pill[data-active="true"] {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* =============================================================================
+   BADGES & STATUS
+   ============================================================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid currentColor;
+}
+
+.badge-solid {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+.badge-outline {
+  background: transparent;
+  color: var(--black);
+}
+
+.badge-pending {
+  color: var(--gray-500);
+  border-style: dashed;
+}
+
+.badge-accent {
+  background: var(--accent);
+  color: var(--white);
+  border-color: var(--accent);
+}
+
+/* Status dot */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--black);
+}
+
+.dot-accent {
+  background: var(--accent);
+}
+
+.dot-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* =============================================================================
+   MAP STYLES
+   ============================================================================= */
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: var(--gray-100);
+}
+
+/* Dark map style */
+.map-dark {
+  background: var(--gray-900);
+}
+
+/* Mapbox overrides */
+.mapboxgl-map {
+  font-family: var(--font-body) !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  opacity: 0.4;
+}
+
+.mapboxgl-popup-content {
+  background: var(--white) !important;
+  color: var(--black) !important;
+  border-radius: 0 !important;
+  padding: var(--space-4) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid var(--gray-200) !important;
+}
+
+.mapboxgl-popup-tip {
+  display: none !important;
+}
+
+/* Map markers */
+.marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.marker:hover {
+  transform: scale(1.3);
+}
+
+.marker-stadium {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+}
+
+.marker-tgv {
+  background: var(--black);
+}
+
+.marker-water {
+  background: #0066cc;
+}
+
+.marker-energy {
+  background: #ffcc00;
+}
+
+/* Hot zone on map */
+.heat-zone {
+  fill: var(--accent);
+  fill-opacity: 0.15;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-opacity: 0.4;
+}
+
+/* Crosshair */
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+.crosshair::before {
+  width: 1px;
+  height: 24px;
+  top: -12px;
+  left: 0;
+}
+
+.crosshair::after {
+  width: 24px;
+  height: 1px;
+  top: 0;
+  left: -12px;
+}
+
+/* =============================================================================
+   HEAT MAP GRADIENT
+   ============================================================================= */
+
+.heat-gradient {
+  background: linear-gradient(
+    to right,
+    var(--gray-100) 0%,
+    var(--gray-300) 25%,
+    var(--gray-500) 50%,
+    var(--accent-light) 75%,
+    var(--accent) 100%
+  );
+}
+
+/* =============================================================================
+   DATA CARDS
+   ============================================================================= */
+
+.data-card {
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+}
+
+.data-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.data-card-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.data-card-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.data-card-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gray-500);
+  margin-top: var(--space-1);
+}
+
+/* =============================================================================
+   SCROLLBAR — Minimal
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* Hide scrollbar option */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* =============================================================================
+   BORDERS & DIVIDERS
+   ============================================================================= */
+
+.border-t { border-top: 1px solid var(--gray-200); }
+.border-b { border-bottom: 1px solid var(--gray-200); }
+.border-l { border-left: 1px solid var(--gray-200); }
+.border-r { border-right: 1px solid var(--gray-200); }
+
+.border-t-black { border-top: 1px solid var(--black); }
+.border-b-black { border-bottom: 1px solid var(--black); }
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.divider-black {
+  background: var(--black);
+}
+
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight var(--duration-normal) var(--ease-out);
+}
+
+/* Stagger children */
+.stagger-children > * {
+  animation: fadeInUp var(--duration-normal) var(--ease-out) both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+/* Text colors */
+.text-black { color: var(--black); }
+.text-white { color: var(--white); }
+.text-gray-500 { color: var(--gray-500); }
+.text-gray-400 { color: var(--gray-400); }
+.text-accent { color: var(--accent); }
+
+/* Background colors */
+.bg-black { background-color: var(--black); }
+.bg-white { background-color: var(--white); }
+.bg-gray-50 { background-color: var(--gray-50); }
+.bg-gray-100 { background-color: var(--gray-100); }
+.bg-gray-900 { background-color: var(--gray-900); }
+
+/* Opacity */
+.opacity-40 { opacity: 0.4; }
+.opacity-60 { opacity: 0.6; }
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 1024px) {
+  .grid-7-5,
+  .grid-5-7,
+  .grid-8-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --space-16: 3rem;
+    --space-24: 4rem;
+    --space-32: 5rem;
+  }
+}
