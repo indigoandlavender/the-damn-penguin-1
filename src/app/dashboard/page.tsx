@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { LegalStamp } from '@/components/verification-badge';
 import { CinematicMap, type CinematicMapHandle, type LandParcel } from '@/components/cinematic-map';
 import type {
   LegalStatus,
