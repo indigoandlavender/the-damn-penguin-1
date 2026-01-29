@@ -1,58 +1,13 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { LegalStamp } from '@/components/verification-badge';
 import { CinematicMap, type CinematicMapHandle, type LandParcel } from '@/components/cinematic-map';
-import type {
-  LegalStatus,
-  CityClassification,
-  VerificationStatus,
-  Property,
-} from '@/types';
+import type { LegalStatus, CityClassification, Property } from '@/types';
 
 // =============================================================================
-// ANIMATION VARIANTS — Staggered Entrance
-// =============================================================================
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  },
-};
-
-// =============================================================================
-// REGIONAL FILTER OPTIONS
-// =============================================================================
-
-const REGIONS: { value: CityClassification | 'all'; label: string; italicLabel?: string }[] = [
-  { value: 'all', label: 'ALL REGIONS' },
-  { value: 'Marrakech', label: 'Marrakech' },
-  { value: 'Fes', label: '', italicLabel: 'Fès' },
-  { value: 'Essaouira', label: '', italicLabel: 'Essaouira' },
-  { value: 'Ouarzazate', label: '', italicLabel: 'Ouarzazate' },
-];
-
-// =============================================================================
-// MOCK DATA — Regional Properties
+// DATA
 // =============================================================================
 
 const mockProperties: Property[] = [
@@ -206,7 +161,6 @@ const mockProperties: Property[] = [
   },
 ];
 
-// Convert properties to map parcels
 const mockParcels: LandParcel[] = mockProperties.map((p) => ({
   id: `parcel-${p.id}`,
   property_id: p.id,
@@ -227,366 +181,228 @@ const mockParcels: LandParcel[] = mockProperties.map((p) => ({
   estimated_value_mad: p.estimated_value_mad ?? undefined,
 }));
 
-// =============================================================================
-// UTILITY FUNCTIONS
-// =============================================================================
-
 function formatMAD(value: number): string {
-  return new Intl.NumberFormat('fr-MA', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatConfidenceBreakdown(property: Property): string {
-  const items: string[] = [];
-  if (property.cadastre_status) items.push(`CADASTRE: ${property.cadastre_status}`);
-  if (property.heirs_status) items.push(`HEIRS: ${property.heirs_status}`);
-  return items.join(' | ');
+  return new Intl.NumberFormat('fr-MA').format(value);
 }
 
 // =============================================================================
-// COMPONENTS
-// =============================================================================
-
-function RegionalToggle({
-  value,
-  onChange,
-}: {
-  value: CityClassification | 'all';
-  onChange: (value: CityClassification | 'all') => void;
-}) {
-  return (
-    <div className="flex items-center gap-1 border-b border-[#EEEEEE]">
-      {REGIONS.map((region) => (
-        <button
-          key={region.value}
-          onClick={() => onChange(region.value)}
-          className={`
-            px-4 py-3 font-mono text-[10px] uppercase tracking-widest
-            transition-all
-            ${value === region.value
-              ? 'border-b-2 border-black text-black'
-              : 'text-black/40 hover:text-black/70'
-            }
-          `}
-        >
-          {region.italicLabel ? (
-            <em className="font-serif text-xs not-italic">{region.italicLabel}</em>
-          ) : (
-            region.label
-          )}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function BankStatementHeader({
-  portfolioValue,
-  charterPotential,
-  totalNetCost,
-}: {
-  portfolioValue: number;
-  charterPotential: number;
-  totalNetCost: number;
-}) {
-  return (
-    <div className="flex items-center border-b border-black">
-      <div className="flex-1 border-r border-[#EEEEEE] px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-          Portfolio Value
-        </p>
-        <p className="font-mono text-2xl tracking-tighter">
-          {formatMAD(portfolioValue)}
-          <span className="ml-1 text-xs opacity-40">MAD</span>
-        </p>
-      </div>
-      <div className="flex-1 border-r border-[#EEEEEE] px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-          Charter Potential
-        </p>
-        <p className="font-mono text-2xl tracking-tighter">
-          {formatMAD(charterPotential)}
-          <span className="ml-1 text-xs opacity-40">MAD</span>
-        </p>
-      </div>
-      <div className="flex-1 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-          Net Acquisition
-        </p>
-        <p className="font-mono text-2xl tracking-tighter">
-          {formatMAD(totalNetCost)}
-          <span className="ml-1 text-xs opacity-40">MAD</span>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function SpecimenCard({
-  property,
-  onHover,
-  onLeave,
-}: {
-  property: Property;
-  onHover: () => void;
-  onLeave: () => void;
-}) {
-  const identifier =
-    property.title_number ||
-    property.requisition_number ||
-    property.melkia_reference ||
-    'UNREGISTERED';
-
-  const gps = property.gps_point
-    ? `${property.gps_point.coordinates[1].toFixed(6)}°N`
-    : '—';
-
-  return (
-    <Link href={`/refinery/${property.id}`}>
-      <article
-        className="group border-b border-[#EEEEEE] transition-colors hover:bg-[#FAFAFA]"
-        onMouseEnter={onHover}
-        onMouseLeave={onLeave}
-      >
-        {/* Technical Label Row */}
-        <div className="flex items-center justify-between px-6 py-3">
-          <span className="font-mono text-[10px] tracking-widest">
-            {identifier}
-          </span>
-          <LegalStamp status={property.legal_status} size="sm" />
-        </div>
-
-        {/* Image — Full width, no padding, natural aspect */}
-        <div className="aspect-[16/10] bg-[#F5F5F5]">
-          <div className="flex h-full w-full items-center justify-center">
-            <span className="font-mono text-xs tracking-widest opacity-20">
-              {property.property_type?.toUpperCase() || 'SPECIMEN'} — {property.city}
-            </span>
-          </div>
-        </div>
-
-        {/* Data Block */}
-        <div className="px-6 py-4">
-          {/* Region & City */}
-          <p className="font-serif text-lg">
-            <em>{property.city}</em>
-            <span className="mx-2 opacity-20">·</span>
-            <span className="font-mono text-xs tracking-wider opacity-50">
-              {property.neighborhood}
-            </span>
-          </p>
-
-          {/* Technical Data Row */}
-          <div className="mt-3 flex items-end justify-between">
-            <div>
-              <p className="font-mono text-[10px] tracking-widest opacity-40">
-                {gps}
-              </p>
-              <p className="font-mono text-[10px] tracking-widest opacity-40">
-                {property.cadastral_zone}
-              </p>
-            </div>
-
-            {/* Net Acquisition Cost */}
-            {property.acquisition_price_mad && property.net_acquisition_cost_mad && (
-              <div className="text-right">
-                <p className="font-mono text-xs tracking-tighter line-through opacity-30">
-                  {formatMAD(property.acquisition_price_mad)} MAD
-                </p>
-                <p className="font-mono text-sm tracking-tighter">
-                  {formatMAD(property.net_acquisition_cost_mad)} MAD
-                  <span className="ml-1 text-[10px] opacity-50">(NET)</span>
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Audit Footnote */}
-          <p className="mt-3 font-mono text-[9px] tracking-wider opacity-40">
-            [{formatConfidenceBreakdown(property)}]
-          </p>
-        </div>
-      </article>
-    </Link>
-  );
-}
-
-// =============================================================================
-// PAGE COMPONENT
+// PAGE
 // =============================================================================
 
 export default function DashboardPage() {
   const mapRef = useRef<CinematicMapHandle>(null);
-  const [regionFilter, setRegionFilter] = useState<CityClassification | 'all'>('all');
-  const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
-  // Filter properties by region
-  const filteredProperties = regionFilter === 'all'
-    ? mockProperties
-    : mockProperties.filter((p) => p.city === regionFilter);
+  const portfolioValue = mockProperties.reduce((sum, p) => sum + (p.estimated_value_mad || 0), 0);
+  const totalNetCost = mockProperties.reduce((sum, p) => sum + (p.net_acquisition_cost_mad || 0), 0);
 
-  const filteredParcels = regionFilter === 'all'
-    ? mockParcels
-    : mockParcels.filter((p) => {
-        const property = mockProperties.find((prop) => prop.id === p.property_id);
-        return property?.city === regionFilter;
-      });
-
-  // Calculate portfolio stats
-  const portfolioValue = filteredProperties.reduce(
-    (sum, p) => sum + (p.estimated_value_mad || 0),
-    0
-  );
-  const charterPotential = filteredProperties.reduce(
-    (sum, p) => {
-      if (p.acquisition_price_mad && p.estimated_cashback_pct) {
-        return sum + (p.acquisition_price_mad * p.estimated_cashback_pct / 100);
-      }
-      return sum;
-    },
-    0
-  );
-  const totalNetCost = filteredProperties.reduce(
-    (sum, p) => sum + (p.net_acquisition_cost_mad || 0),
-    0
-  );
-
-  // Fly to property on hover
   const handlePropertyHover = useCallback((property: Property) => {
-    setHoveredPropertyId(property.id);
+    setSelectedProperty(property);
     if (property.gps_point && mapRef.current) {
       mapRef.current.flyToProperty({
         lng: property.gps_point.coordinates[0],
         lat: property.gps_point.coordinates[1],
-      }, 15);
+      }, 14);
     }
   }, []);
 
-  const handlePropertyLeave = useCallback(() => {
-    setHoveredPropertyId(null);
-  }, []);
-
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="min-h-screen bg-white text-black">
+      
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-[#EEEEEE] bg-white">
-        <div className="flex items-center justify-between px-6 py-4">
-          <Link href="/" className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em]">
-            The Damn Penguin
+      <nav className="px-8 py-6 flex items-center justify-between">
+        <Link href="/" className="text-[15px] font-semibold tracking-[-0.02em]">
+          The Morocco Oracle
+        </Link>
+        <div className="flex items-center gap-10">
+          <Link href="/infrastructure" className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
+            Infrastructure
           </Link>
-          <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-widest">
-              Portfolio
-            </Link>
-            <Link href="/scout" className="font-mono text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100">
-              Scout
-            </Link>
-            <button
-              onClick={async () => {
-                await fetch('/api/auth', { method: 'DELETE' });
-                window.location.href = '/login';
-              }}
-              className="font-mono text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100"
-            >
-              Exit
-            </button>
-          </div>
+          <Link href="/heat" className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
+            Heat Map
+          </Link>
+          <Link href="/pipeline" className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
+            Pipeline
+          </Link>
+          <Link href="/dashboard" className="text-[11px] uppercase tracking-[0.15em] hover:text-gray-500 transition-colors">
+            Portfolio
+          </Link>
         </div>
       </nav>
 
-      {/* Masthead — Heritage Newspaper Style */}
-      <header className="border-b border-black px-6 py-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40">
-          Morocco 2026 Investment Charter
+      {/* Thin rule */}
+      <div className="mx-8 h-px bg-gray-200" />
+
+      {/* Header */}
+      <header className="px-8 py-12">
+        <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+          Investment Portfolio
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-light tracking-tight">
-          Digital Investment Gallery
+        <h1 className="text-[clamp(3rem,8vw,7rem)] font-bold leading-[0.85] tracking-[-0.03em] mt-4">
+          PROPERTY
+          <br />
+          INTELLIGENCE
         </h1>
-        <p className="mt-1 font-serif text-lg italic opacity-60">
-          National Property Intelligence Pipeline
-        </p>
       </header>
 
-      {/* Bank Statement Stats */}
-      <BankStatementHeader
-        portfolioValue={portfolioValue}
-        charterPotential={charterPotential}
-        totalNetCost={totalNetCost}
-      />
+      {/* Thin rule */}
+      <div className="mx-8 h-px bg-gray-200" />
 
-      {/* Regional Toggle */}
-      <RegionalToggle value={regionFilter} onChange={setRegionFilter} />
+      {/* Stats — Large, editorial */}
+      <section className="px-8 py-16 grid grid-cols-2 gap-16">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+            Portfolio Value
+          </p>
+          <p className="text-[3.5rem] font-bold tracking-[-0.03em] mt-2 leading-none">
+            {formatMAD(portfolioValue)}
+            <span className="text-[1rem] text-gray-400 ml-2">MAD</span>
+          </p>
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+            Net Acquisition
+          </p>
+          <p className="text-[3.5rem] font-bold tracking-[-0.03em] mt-2 leading-none">
+            {formatMAD(totalNetCost)}
+            <span className="text-[1rem] text-gray-400 ml-2">MAD</span>
+          </p>
+        </div>
+      </section>
 
-      {/* Split Screen: Map (Left) + Catalog (Right) */}
-      <div className="flex flex-1">
-        {/* Map — Sticky Left Panel */}
-        <div className="sticky top-[120px] hidden h-[calc(100vh-120px)] w-1/2 border-r border-[#EEEEEE] lg:block">
+      {/* Thin rule */}
+      <div className="mx-8 h-px bg-gray-200" />
+
+      {/* Properties count */}
+      <div className="px-8 py-6">
+        <p className="text-[11px] uppercase tracking-[0.15em]">
+          {mockProperties.length} Properties
+        </p>
+      </div>
+
+      {/* Thin rule */}
+      <div className="mx-8 h-px bg-gray-200" />
+
+      {/* Property List — Editorial style */}
+      <section>
+        {mockProperties.map((property, index) => (
+          <Link 
+            key={property.id} 
+            href={`/refinery/${property.id}`}
+            className="block group"
+            onMouseEnter={() => handlePropertyHover(property)}
+          >
+            <article className="px-8 py-12 hover:bg-gray-50 transition-colors">
+              <div className="grid grid-cols-12 gap-8 items-start">
+                
+                {/* Index */}
+                <div className="col-span-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                    {String(index + 1).padStart(2, '0')}
+                  </p>
+                </div>
+
+                {/* Main info */}
+                <div className="col-span-5">
+                  <h2 className="text-[2rem] font-bold tracking-[-0.02em] leading-tight group-hover:text-gray-500 transition-colors">
+                    {property.city}
+                  </h2>
+                  <p className="text-[13px] text-gray-500 mt-2">
+                    {property.neighborhood} · {property.property_type}
+                  </p>
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 mt-4">
+                    {property.title_number || property.requisition_number || property.melkia_reference}
+                  </p>
+                </div>
+
+                {/* Status */}
+                <div className="col-span-2">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                    Status
+                  </p>
+                  <p className="text-[13px] mt-2">
+                    {property.legal_status}
+                  </p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="w-16 h-1 bg-gray-200">
+                      <div 
+                        className="h-full bg-black"
+                        style={{ width: `${property.legal_confidence_score}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] text-gray-400">
+                      {property.legal_confidence_score}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Value */}
+                <div className="col-span-2">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                    Value
+                  </p>
+                  <p className="text-[1.25rem] font-bold tracking-[-0.02em] mt-2">
+                    {formatMAD(property.estimated_value_mad || 0)}
+                  </p>
+                  <p className="text-[11px] text-gray-400">MAD</p>
+                </div>
+
+                {/* Net */}
+                <div className="col-span-2 text-right">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                    Net Acquisition
+                  </p>
+                  <p className="text-[1.25rem] font-bold tracking-[-0.02em] mt-2">
+                    {formatMAD(property.net_acquisition_cost_mad || 0)}
+                  </p>
+                  <p className="text-[11px] text-gray-400">
+                    -{property.estimated_cashback_pct}% charter
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            {/* Thin rule */}
+            <div className="mx-8 h-px bg-gray-200" />
+          </Link>
+        ))}
+      </section>
+
+      {/* Map section */}
+      <section className="mt-16">
+        <div className="px-8 py-6">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-500">
+            Geographic Distribution
+          </p>
+        </div>
+        <div className="h-[70vh] bg-gray-100">
           <CinematicMap
             ref={mapRef}
             height="100%"
-            showCrosshair={true}
-            parcels={filteredParcels}
+            showCrosshair={false}
+            parcels={mockParcels}
             enableRealtime={false}
             onParcelClick={(parcel) => {
               window.location.href = `/refinery/${parcel.property_id}`;
             }}
           />
         </div>
-
-        {/* Catalog — Scrolling Right Panel */}
-        <div className="flex-1">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {/* Specimen Count */}
-            <div className="border-b border-[#EEEEEE] px-6 py-4">
-              <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-                {filteredProperties.length} Specimens
-                {regionFilter !== 'all' && (
-                  <span className="ml-2">
-                    · <em className="font-serif not-italic">{regionFilter}</em>
-                  </span>
-                )}
-              </p>
-            </div>
-
-            {/* Specimen List */}
-            {filteredProperties.length === 0 ? (
-              <div className="flex h-64 items-center justify-center">
-                <p className="font-mono text-xs uppercase tracking-widest opacity-30">
-                  No specimens in this region
-                </p>
-              </div>
-            ) : (
-              filteredProperties.map((property) => (
-                <motion.div key={property.id} variants={itemVariants}>
-                  <SpecimenCard
-                    property={property}
-                    onHover={() => handlePropertyHover(property)}
-                    onLeave={handlePropertyLeave}
-                  />
-                </motion.div>
-              ))
-            )}
-          </motion.div>
-        </div>
-      </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-black px-6 py-6">
-        <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-            © 2026 The Damn Penguin
-          </p>
-          <p className="font-mono text-[10px] uppercase tracking-widest opacity-40">
-            Institutional Access Only
-          </p>
-        </div>
+      <footer className="px-8 py-8 flex items-center justify-between border-t border-gray-200 mt-16">
+        <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+          © 2026 The Morocco Oracle
+        </p>
+        <button
+          onClick={async () => {
+            await fetch('/api/auth', { method: 'DELETE' });
+            window.location.href = '/login';
+          }}
+          className="text-[11px] uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors"
+        >
+          Sign Out
+        </button>
       </footer>
     </div>
   );
